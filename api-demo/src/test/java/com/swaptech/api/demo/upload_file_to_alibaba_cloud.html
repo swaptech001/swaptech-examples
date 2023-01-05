@@ -1,0 +1,84 @@
+<html lang="en-US">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" rel="stylesheet">
+
+    <title>Upload to alibaba cloud!</title>
+</head>
+
+<body>
+<script crossorigin="anonymous"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script crossorigin="anonymous"
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+        src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <p class="h1">
+                This is alibaba cloud OSS demo
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <form action="https://api-sandbox-temporary-hk.oss-cn-hongkong.aliyuncs.com"
+                  class="mt-3 border border-secondary rounded p-3"
+                  enctype="multipart/form-data" method="post">
+                <div class="form-group">
+                    <label for="keyInput">Key:</label>
+                    <input class="form-control" id="keyInput" name="key" type="text"
+                           value="16b51b0f-afe2-48de-9ad5-d2a097567457.png">
+                </div>
+                <div class="form-group">
+                    <label for="contentTypeInput">Content-Type:</label>
+                    <input class="form-control" id="contentTypeInput" name="Content-Type" type="text" value="image/png">
+                </div>
+                <div class="form-group">
+                    <label for="accessKeyInput">AccessKeyId:</label>
+                    <input class="form-control" id="accessKeyInput" name="OSSAccessKeyId" type="text"
+                           value="LTAI4G3p41pfESSvEH554mov">
+                </div>
+                <div class="form-group">
+                    <label for="cusUserInput">UserId:</label>
+                    <input class="form-control" id="cusUserInput" name="x:user" type="text" value="2">
+                </div>
+                <div class="form-group">
+                    <label for="cusRegionInput">Region:</label>
+                    <input class="form-control" id="cusRegionInput" name="x:region" type="text" value="oss-cn-hongkong">
+                </div>
+                <div class="form-group">
+                    <label for="cusTypeInput">Type:</label>
+                    <input class="form-control" id="cusTypeInput" name="x:type" type="text" value="FACE">
+                </div>
+                <div class="form-group">
+                    <label for="overwriteInput">ForbidOverWrite:</label>
+                    <input class="form-control" id="overwriteInput" name="x-oss-forbid-overwrite" type="type"
+                           value="true">
+                </div>
+                <div class="form-group">
+                    <label for="policyInput">Policy:</label>
+                    <input class="form-control" id="policyInput" name="policy" type="text"
+                           value='eyJleHBpcmF0aW9uIjoiMjAyMy0wMS0wNFQwODoyNzoyNi45MThaIiwiY29uZGl0aW9ucyI6W1sic3RhcnRzLXdpdGgiLCIkQ29udGVudC1UeXBlIiwiaW1hZ2UvcG5nIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XSx7ImtleSI6IjE2YjUxYjBmLWFmZTItNDhkZS05YWQ1LWQyYTA5NzU2NzQ1Ny5wbmcifSx7Ingtb3NzLWZvcmJpZC1vdmVyd3JpdGUiOiJ0cnVlIn0seyJ4OnR5cGUiOiJGQUNFIn0seyJ4OnVzZXIiOiIyIn0seyJ4OnJlZ2lvbiI6Im9zcy1jbi1ob25na29uZyJ9XX0='>
+                </div>
+                <div class="form-group">
+                    <label for="signatureInput">Signature:</label>
+                    <input class="form-control" id="signatureInput" name="signature" type="text"
+                           value="dZaSZTxf3DaNfRpD8nChOZOhszQ=">
+                </div>
+                <div class="form-group">
+                    <label for="fileInput">File:</label>
+                    <input class="form-control-file" id="fileInput" name="file" type="file">
+                </div>
+
+                <button class="btn btn-primary" type="submit">Upload to Alibaba Cloud</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

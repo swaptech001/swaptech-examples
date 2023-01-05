@@ -1,0 +1,42 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+<form action="https://s3.ap-east-1.amazonaws.com/api-sandbox-temporary" method="post" enctype="multipart/form-data">
+    Key to upload:
+    <input type="input" name="key" value="US/20221217/tasGTKZgDv/7683ab34-f765-4873-8d41-a2002ff7ed65.jpg"/><br/>
+    Content-Type:
+    <input type="input" name="Content-Type" value="image/jpeg"/><br/>
+    Credential:
+    <input type="text" name="X-Amz-Credential" value="AKIAVAPORGDGKH3EHXVT/20221217/ap-east-1/s3/aws4_request"/><br/>
+    Algorithm:
+    <input type="text" name="X-Amz-Algorithm" value="AWS4-HMAC-SHA256"/><br/>
+    Data:
+    <input type="text" name="X-Amz-Date" value="20221217T151725Z"/><br/>
+
+    UserId:
+    <input type="text" name="X-Amz-Meta-Userid" value="1"/><br/>
+    Bucket:
+    <input type="text" name="X-Amz-Meta-Bucket" value="api-sandbox-temporary"/><br/>
+    FileType:
+    <input type="text" name="X-Amz-Meta-Filetype" value="FACE"/><br/>
+    Parameters:
+    <input type="text" name="X-Amz-Meta-Parameters"
+           value="eyJjbGllbnRfcmVxdWVzdF9pZCI6IjM1ODkwMDY2MjU5MjA5MzgzMTMifQ=="/><br/>
+
+    Policy:
+    <input type="hidden" name="Policy"
+           value='eyJleHBpcmF0aW9uIjoiMjAyMi0xMi0xN1QxNToyNzoyNVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJhcGktc2FuZGJveC10ZW1wb3JhcnkifSx7ImtleSI6IlVTLzIwMjIxMjE3L3Rhc0dUS1pnRHYvNzY4M2FiMzQtZjc2NS00ODczLThkNDEtYTIwMDJmZjdlZDY1LmpwZyJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotY3JlZGVudGlhbCI6IkFLSUFWQVBPUkdER0tIM0VIWFZULzIwMjIxMjE3L2FwLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSx7IngtYW16LWRhdGUiOiIyMDIyMTIxN1QxNTE3MjVaIn0sWyJlcSIsIiR4LWFtei1tZXRhLXVzZXJJZCIsIjEiXSxbImVxIiwiJHgtYW16LW1ldGEtcGFyYW1ldGVycyIsImV5SmpiR2xsYm5SZmNtVnhkV1Z6ZEY5cFpDSTZJak0xT0Rrd01EWTJNalU1TWpBNU16Z3pNVE1pZlE9PSJdLFsiZXEiLCIkeC1hbXotbWV0YS1maWxlVHlwZSIsIkZBQ0UiXSxbImVxIiwiJHgtYW16LW1ldGEtYnVja2V0IiwiYXBpLXNhbmRib3gtdGVtcG9yYXJ5Il0sWyJzdGFydHMtd2l0aCIsIiRDb250ZW50LVR5cGUiLCJpbWFnZS9qcGVnIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XV19'/><br/>
+    Signature:
+    <input type="hidden" name="X-Amz-Signature"
+           value="afae718056312768976b78897c58e0ebc9d6498ce03e80d415e7c9158511c74d"/><br/>
+    File:
+    <input type="file" name="file"/><br/>
+    <!-- The elements after this will be ignored -->
+    Submit:
+    <input type="submit" name="submit" value="Upload to Amazon S3"/><br/>
+</form>
+
+</html>
