@@ -52,6 +52,37 @@ public final class Main {
         }
         log.info("==================== material pre-process complete ====================");
 
+        // 2. start task with face url and wait callback
+        log.info("==================== start task ====================");
+        StartTaskResponse startTaskResponse = Task.createTask(materialId, Collections.singletonList(FacePair.builder().index(0L).faceId(null).faceUrl(FACE_URL).build())).getData();
+        Long taskId = Long.parseLong(startTaskResponse.getTaskId());
+        // 2.1(optional) query task status, sleep 1 second to do other works
+        TimeUnit.SECONDS.sleep(1);
+        while ("PROCESSING".equals(Task.queryTask(taskId).getData().getStatus())) {
+            log.info("==================== waiting task processing ====================");
+            TimeUnit.SECONDS.sleep(5);
+        }
+        log.info("==================== task process complete ====================");
+    }
+
+    /**
+     * the simple way to upload material
+     *
+     * @throws Exception
+     */
+    public static void faceSwapUploadMaterialByUrl() throws Exception {
+        // 1. upload material and wait for materialId in callback
+        log.info("==================== add material start ====================");
+        final AddMaterialResponse response = Material.addMaterial(null, MATERIAL_URL).getData();
+        Long materialId = Long.parseLong(response.getMaterialId());
+        // 1.1(optional) query material status, sleep 1 second to do other works
+        TimeUnit.SECONDS.sleep(1);
+        while ("PRE_PROCESSING".equals(Material.queryMaterial(materialId).getData().getStatus())) {
+            log.info("==================== waiting material pre-processing ====================");
+            TimeUnit.SECONDS.sleep(5);
+        }
+        log.info("==================== material pre-process complete ====================");
+
         // 2. upload face
         log.info("==================== upload face complete ====================");
         SyncFaceResponse syncFaceResponse = Face.syncFace(null, FACE_URL).getData();
@@ -121,6 +152,7 @@ public final class Main {
 
     public static void main(String[] args) throws Exception {
         faceSwapSimplestWithUrl();
+        faceSwapUploadMaterialByUrl();
         faceSwapWithId();
     }
 }
