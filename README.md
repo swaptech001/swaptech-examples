@@ -182,3 +182,7 @@ void queryTask()throws Exception{
 
 Contributions are welcome.
 If you've found a bug within this project, please open an issue to discuss what you would like to change.
+
+## Disclaimer
+
+SwapTech is a technology provider and is committed to keeping customer information confidential. However, it is the responsibility of the user to use the technology in a lawful manner. SwapTech does not take responsibility for the actions of the user. It is advisable for users to customize a disclaimer based on local laws and seek legal advice if necessary.
