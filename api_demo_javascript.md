@@ -1,0 +1,699 @@
+# SwapTech Public API JavaScript
+
+This is a lightweight example that works to the [SwapTech public API doc](https://doc.swaptech.net/swaptech-api/swagger-ui/index.html#).
+
+- Supported APIs:
+    - Account
+        - `/v1/accounts/me/balance`
+        - `/v1/accounts/me/bills`
+    - File Upload
+        - `/v1/files/-/signatures/amazons`
+        - `/v1/files/-/signatures/aliyu`
+    - Material
+        - `/v1/materials/*`
+    - Face
+        - `/v1/faces*`
+    - Task
+        - `/v1/tasks/*`
+- Test cases and examples
+
+## RESTful APIs
+
+Requests and responses have an `application/json` `Content-Type` and follow standard HTTP response status codes for success and failures.
+
+Request bodies should have content type `application/json` and be valid JSON. 
+
+```javascript
+const apiUrl = 'http://sandbox.swaptech.net/v1/<API_PATH>';
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+const headers = {
+  'X_API_KEY': apiKey,
+  'X_API_SIGN': apiSign,
+  'X_API_TS': apiTs,
+  'Content-Type': 'application/json'
+};
+```
+
+When in the sandbox environment，we will disable `X_API_SIGN` check as default but `X_API_KEY` is a **must** , that means the correct `X_API_KEY` value  is sufficient to test in our sandbox environment.
+
+When in the production environment, if you request strict checking of the **X_API_SIGN** for your account's request, we can enable this check. Your API request should then ensure a valid **`X_API_SIGH` **. For instructions on creating a valid `X_API_SIGN`, see https://doc.swaptech.net/swaptech-api/swagger-ui/index.html.
+
+## Testnet
+
+The default `baseUrl` is http://sandbox.swaptech.net. When click，you will get the response as below:
+
+```json
+{
+  "code": 0,
+  "data": "Gateway Pong",
+  "msg": "OK"
+}
+```
+
+## Installation
+
+Run `npm install axios`  first to test the `javascript` below.
+
+## Create Task Example
+
+### FileUrl to create task 
+
+If your material image and face image are stored in your server, and you can only get **fileUrl**, then you can finish a task as described below:
+
+#### Add material by fileUrl
+
+Run the `javascript` as shown below, and the **materialId** will be returned  in a successfully response.
+
+```javascript
+const axios = require('axios');
+
+const apiUrl = 'http://sandbox.swaptech.net/v1/materials/';
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+const payload = {
+  fileId: null,
+  fileUrl: 'https://xxx_material_url',
+  ttl: 3600000,
+  callbackUrl: 'https://xxx_callback_url',
+  clientRequestId: '7196238646601185968'
+};
+
+const data = {
+  payload: JSON.stringify(payload)
+};
+
+const headers = {
+  'X_API_KEY': apiKey,
+  'X_API_SIGN': apiSign,
+  'X_API_TS': apiTs,
+  'Content-Type': 'application/json'
+};
+
+axios.post(apiUrl, data, { headers })
+  .then(response => {
+    console.log('Response:', response.data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+// success response like below
+// {
+//     "code": 0,
+//     "data": {
+//         "materialId": "3640409109520512949",
+//         "clientRequestId": "7196238646601185968"
+//     },
+//     "msg": "OK"
+// }
+```
+
+#### Create Task and query
+
+Run the `javascript`  as shown below to query the task result:
+
+```javascript
+const axios = require('axios');
+
+const apiUrl = 'http://sandbox.swaptech.net/v1/tasks';
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+const payload = {
+  materialId: '3640409109520512949',
+  facePairs: [{
+    index: 0,
+    faceId: null,
+    fileUrl: 'https://xxx_face_jpg_url',
+  }],
+  ttl: 3600000,
+  priority: 'HIGH',
+  clientRequestId: '8005869950778481107',
+  callbackUrl: 'https://xxx_callback_url'
+};
+
+const data = {
+  payload: JSON.stringify(payload)
+};
+
+const headers = {
+  'X_API_KEY': apiKey,
+  'X_API_SIGN': apiSign,
+  'X_API_TS': apiTs,
+  'Content-Type': 'application/json'
+};
+
+axios.post(apiUrl, data, { headers })
+  .then(response => {
+    const jsonResponse = response.data;
+    console.log('Response:', JSON.stringify(jsonResponse, null, 2));
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+// success response
+// {
+//  "code": 0,
+//  "data": {
+//  	"taskId": "3640414003635746786",
+//    "clientRequestId": "8005869950778481107"
+// 		},
+//  "msg": "OK"
+// }
+
+```
+
+Run the `curl` request as below to query the last result as below, the `TASK_ID` are from the success response above.
+
+```shell
+const axios = require('axios');
+
+const apiUrl = 'http://sandbox.swaptech.net/v1/tasks/<TASK_ID>';
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+const headers = {
+  'X_API_KEY': apiKey,
+  'X_API_SIGN': apiSign,
+  'X_API_TS': apiTs,
+  'Content-Type': 'application/json'
+};
+
+axios.get(apiUrl, { headers })
+  .then(response => {
+    const jsonResponse = response.data;
+    console.log('Response:', JSON.stringify(jsonResponse, null, 2));
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+// success response
+// {
+// 	"code": 0,
+// 	"data": {
+// 		"id": "3640414003635746786",
+// 		"materialId": "3640409109520512949",
+// 		"materialType": "PHOTO",
+// 		"status": "SUCCEED",
+// 		"facePairs": [{
+// 			"index": 0,
+// 			"sourceUrl": "https://xxx_source_url_0"
+// 		}, {
+// 			"index": 1,
+// 			"sourceUrl": "https://xxx_source_url_2"
+// 		}],
+// 		"fileUrl": "https://xxx_file_url",
+// 		"coverPhotoUrl": "https://xxx_cover_photo_url",
+// 		"coverGifUrl": "https://xxx_cover_gif_url",
+// 		"expiredAt": "1695203474085",
+// 		"clientRequestId": "8005869950778481107",
+// 		"errorCode": null,
+// 		"failReason": null
+// 	},
+// 	"msg": "OK"
+// }
+```
+
+### Local file to create task
+
+If your material image and face image are stored locally,  you can finish the task as described below:
+
+#### Get materialId
+
+To obtain a **materialId** from a local image, you need to follow these 3 steps:
+
+1. Obtain the **AWS S3** or **Aliyun OSS** signature (which includes a **fileId**)  to upload the material image.
+2. Upload material image to **AWS S3** or **Aliyun OSS** using the **signature**.
+3. Add the material using the **fileId** (included in the signature).
+
+**Step1:** Obtain the **AWS S3** or **Aliyun OSS** signature
+
+The `extension` below **`png`** means you want to upload a **png** image; you can replace it with **jpg**、**gif**、**mp4**, depending on  your file extension type.
+
+* Obtain **AWS S3 ** signature
+
+  ```javascript
+  const axios = require('axios');
+  
+  const url = 'http://sandbox.swaptech.net/v1/files/-/signatures/amazons3';
+  const extension = 'png';
+  const fileType = 'MATERIAL';
+  const apiKey = '<ACCESS_KEY>';
+  const apiSign = '<SIGNATURE>';
+  const apiTs = '<TIMESTAMP>';
+  
+  axios.get(url, {
+    params: {
+      extension,
+      fileType
+    },
+    headers: {
+      'X_API_KEY': apiKey,
+      'X_API_SIGN': apiSign,
+      'X_API_TS': apiTs
+    }
+  })
+    .then(response => {
+      console.log('Response:', response.data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+    
+  // success response
+  //    {
+  //        "success": true,
+  //        "errorCode": 0,
+  //        "data": {
+  //        		"fileId": "3640578947559782775",
+  //            "url": "https://s3.ap-east-1.amazonaws.com/api-sandbox-temporary",
+  //            "key": "US/20230921/qzKhDIcNrh/2231539a-72cb-4933-87f4-69180682a249.png",
+  //            "policy": "eyJleHBpcmF0aW9uIjoiMjAyMy0wOS0yMVQxNDoyMToxOVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJhcGktc2FuZGJveC10ZW1wb3JhcnkifSx7ImtleSI6IlVTLzIwMjMwOTIxL3F6S2hESWNOcmgvMjIzMTUzOWEtNzJjYi00OTMzLTg3ZjQtNjkxODA2ODJhMjQ5LnBuZyJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotY3JlZGVudGlhbCI6IkFLSUFWQVBPUkdER0tIM0VIWFZULzIwMjMwOTIxL2FwLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSx7IngtYW16LWRhdGUiOiIyMDIzMDkyMVQxNDExMTlaIn0sWyJlcSIsIiR4LWFtei1tZXRhLXVzZXJJZCIsIjEiXSxbImVxIiwiJHgtYW16LW1ldGEtcGFyYW1ldGVycyIsImV5SmpiR2xsYm5SZmNtVnhkV1Z6ZEY5cFpDSTZJak0yTkRBMU56ZzVORGMxTlRrM09ESTNOelFpZlE9PSJdLFsiZXEiLCIkeC1hbXotbWV0YS1maWxlVHlwZSIsIk1BVEVSSUFMIl0sWyJlcSIsIiR4LWFtei1tZXRhLWJ1Y2tldCIsImFwaS1zYW5kYm94LXRlbXBvcmFyeSJdLFsic3RhcnRzLXdpdGgiLCIkQ29udGVudC1UeXBlIiwiaW1hZ2UvcG5nIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XV19",
+  //            "expire": "1695277279838",
+  //            "xamzAlgorithm": "AWS4-HMAC-SHA256",
+  //            "xamzCredential": "AKIAVAPORGDGKH3EHXVT/20230921/ap-east-1/s3/aws4_request",
+  //            "xamzDate": "20230921T141119Z",
+  //            "xamzSignature": "d3e9d8ffa073e273f6dec2cdc47e926d296f4cc41cc48c844b0e72d3743478d0",
+  //            "xamzMetaUserid": "1",
+  //            "xamzMetaBucket": "api-sandbox-temporary",
+  //            "xamzMetaFiletype": "MATERIAL",
+  //            "xamzMetaParameters": "eyJjbGllbnRfcmVxdWVzdF9pZCI6IjM2NDA1Nzg5NDc1NTk3ODI3NzQifQ=="
+  //    },
+  //        "errorMsg": "OK"
+  //    }                
+  ```
+
+* Obtain **Aliyun OSS ** signature
+
+  ```javascript
+  const axios = require('axios');
+  
+  const url = 'http://sandbox.swaptech.net/v1/files/-/signatures/aliyun';
+  const extension = 'png';
+  const fileType = 'MATERIAL';
+  const apiKey = '<ACCESS_KEY>';
+  const apiSign = '<SIGNATURE>';
+  const apiTs = '<TIMESTAMP>';
+  
+  axios.get(url, {
+    params: {
+      extension,
+      fileType
+    },
+    headers: {
+      'X_API_KEY': apiKey,
+      'X_API_SIGN': apiSign,
+      'X_API_TS': apiTs
+    }
+  })
+    .then(response => {
+       console.log('Response:', response.data);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  
+  // success response
+  //    {
+  //        success: true,
+  //            errorCode: 0,
+  //        data: {
+  //        fileId: '3640580201690233208',
+  //            accessId: 'LTAI4G3p41pfESSvEH554mov',
+  //            host: 'https://api-sandbox-temporary-hk.oss-accelerate.aliyuncs.com',
+  //            policy: 'eyJleHBpcmF0aW9uIjoiMjAyMy0wOS0yMVQwODowMTowMy45ODlaIiwiY29uZGl0aW9ucyI6W1sic3RhcnRzLXdpdGgiLCIkQ29udGVudC1UeXBlIiwiaW1hZ2UvcG5nIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XSx7ImtleSI6IjkzYjMyYzM5LWRmYzEtNGFkYi05YTg5LTgyODRiN2VjODk2NS5wbmcifSx7Ingtb3NzLWZvcmJpZC1vdmVyd3JpdGUiOiJ0cnVlIn0seyJ4OnR5cGUiOiJNQVRFUklBTCJ9LHsieDp1c2VyIjoiMSJ9LHsieDpyZWdpb24iOiJvc3MtY24taG9uZ2tvbmcifV19',
+  //            signature: 'pAA+H53WqWhIU+SVBmnE37lPuGE=',
+  //            callback: null,
+  //            expire: 1695283263,
+  //            filename: '93b32c39-dfc1-4adb-9a89-8284b7ec8965.png',
+  //            fileType: 'MATERIAL',
+  //            userId: '1',
+  //            region: 'oss-cn-hongkong',
+  //            bizId: null
+  //    },
+  //        errorMsg: 'OK'
+  //    }
+  ```
+
+
+
+**Step2:** Upload material image with signature
+
+The format below **`Content-Type=image/png`** means you want to upload a **png** image, you can replace it with **image/jpeg**、**image/gif**、**image/mp4** according to your file extension type.
+
+When you want to upload a **jpg** image, **Content-Type=image/jpeg** instead of **image/jpg**.
+
+* Upload material image to AWS S3
+
+  ```javascript
+  const axios = require('axios');
+  const FormData = require('form-data');
+  const fs = require('fs');
+  
+  const url = 'https://s3.ap-east-1.amazonaws.com/api-sandbox-temporary';
+  const filePath = 'path/to/your/file.jpg'; // Replace with the actual file path
+  
+  const form = new FormData();
+  form.append('key', 'US/20230921/qzKhDIcNrh/2231539a-72cb-4933-87f4-69180682a249.png');
+  form.append('Content-Type', 'image/png');
+  form.append('X-Amz-Credential', 'AKIAVAPORGDGKH3EHXVT/20230921/ap-east-1/s3/aws4_request');
+  form.append('X-Amz-Algorithm', 'AWS4-HMAC-SHA256');
+  form.append('X-Amz-Date', '20230921T141119Z');
+  form.append('X-Amz-Meta-Userid', '1');
+  form.append('X-Amz-Meta-Bucket', 'api-sandbox-temporary');
+  form.append('X-Amz-Meta-Filetype', 'MATERIAL');
+  form.append('X-Amz-Meta-Parameters', 'eyJjbGllbnRfcmVxdWVzdF9pZCI6IjM2NDA1Nzg5NDc1NTk3ODI3NzQifQ==');
+  form.append('Policy', 'eyJleHBpcmF0aW9uIjoiMjAyMy0wOS0yMVQwODowMTowMy45ODlaIiwiY29uZGl0aW9ucyI6W1sic3RhcnRzLXdpdGgiLCIkQ29udGVudC1UeXBlIiwiaW1hZ2UvcG5nIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XSx7ImtleSI6IjkzYjMyYzM5LWRmYzEtNGFkYi05YTg5LTgyODRiN2VjODk2NS5wbmcifSx7Ingtb3NzLWZvcmJpZC1vdmVyd3JpdGUiOiJ0cnVlIn0seyJ4OnR5cGUiOiJNQVRFUklBTCJ9LHsieDp1c2VyIjoiMSJ9LHsieDpyZWdpb24iOiJvc3MtY24taG9uZ2tvbmcifV19');
+  form.append('X-Amz-Signature', 'd3e9d8ffa073e273f6dec2cdc47e926d296f4cc41cc48c844b0e72d3743478d0');
+  form.append('file', fs.createReadStream(filePath));
+  
+  axios.post(url, form, {
+    headers: {
+      ...form.getHeaders(), // Add appropriate Content-Type header based on form data
+    },
+  })
+    .then(response => {
+      console.log('Response data:', response.data);
+    })
+    .catch(error => {
+      console.error('There has been a problem with the request:', error);
+    });
+  ```
+
+* Upload material image to Aliyun OSS
+
+  ```javascript
+  const axios = require('axios');
+  const FormData = require('form-data');
+  const fs = require('fs');
+  
+  const url = 'https://api-sandbox-temporary-hk.oss-cn-hongkong.aliyuncs.com';
+  const filePath = 'path/to/material.png'; // Replace with the actual file path
+  
+  const form = new FormData();
+  form.append('key', '785ac88e-412c-4098-805e-2a88fdde116d.png');
+  form.append('Content-Type', 'image/png');
+  form.append('OSSAccessKeyId', 'LTAI4G3p41pfESSvEH554mov');
+  form.append('x:user', '1');
+  form.append('x:region', 'oss-cn-hongkong');
+  form.append('x:type', 'MATERIAL');
+  form.append('x-oss-forbid-overwrite', 'true');
+  form.append('policy', 'eyJleHBpcmF0aW9uIjoiMjAyMy0wOS0yMFQxMjoyODoyNC4zNjBaIiwiY29uZGl0aW9ucyI6W1sic3RhcnRzLXdpdGgiLCIkQ29udGVudC1UeXBlIiwiaW1hZ2UvcG5nIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XSx7ImtleSI6Ijc4NWFjODhlLTQxMmMtNDA5OC04MDVlLTJhODhmZGRlMTE2ZC5wbmcifSx7Ingtb3NzLWZvcmJpZC1vdmVyd3JpdGUiOiJ0cnVlIn0seyJ4OnR5cGUiOiJNQVRFUklBTCJ9LHsieDp1c2VyIjoiMSJ9LHsieDpyZWdpb24iOiJvc3MtY24taG9uZ2tvbmcifV19');
+  form.append('signature', 'VwbWSISMAluOVGxRi8F8qvN6snc=');
+  form.append('file', fs.createReadStream(filePath));
+  
+  axios.post(url, form, {
+    headers: {
+      ...form.getHeaders(),
+    },
+  })
+    .then(response => {
+      console.log('Response data:', response.data);
+    })
+    .catch(error => {
+      console.error('There has been a problem with the request:', error);
+    });
+  ```
+
+
+
+**Step3:** Add material image using material **fileId**
+
+After successfully uploading the material image to **AWS S3** or **Aliyun OSS**, we can use the **material fileId** (contains in the signature) to add material, and the **materialId** will be returned in the success response.
+
+```javascript
+const axios = require('axios');
+
+const url = 'http://sandbox.swaptech.net/v1/materials/';
+
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+const payload = {
+  fileId: '3640588093692639620',
+  fileUrl: null,
+  ttl: 3600000,
+  callbackUrl: 'https://xxx_callback_url',
+  clientRequestId: '7196238646601185968'
+};
+
+const data = {
+  payload: JSON.stringify(payload)
+};
+
+axios.post(url, data, {
+  headers: {
+    'X_API_KEY': apiKey,
+    'X_API_SIGN': apiSign,
+    'X_API_TS': apiTs,
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => {
+    console.log('Response data:', response.data);
+  })
+  .catch(error => {
+    console.error('There has been a problem with the request:', error);
+  });
+
+// success response
+//    {
+//        "code": 0,
+//        "data": {
+//        "materialId": "3640594705794791847",
+//            "clientRequestId": "7196238646601185968"
+//    },
+//        "msg": "OK"
+//    }
+```
+
+
+
+#### Get  FaceId
+
+Get FaceId is the same as getting **materialId**.
+
+**Step1:** btain the signature to upload face image.
+
+When obtaining the signature to upload a material image, the queryString is **`fileType=MATERIAL`**. When obtaining the signature to upload a face image, the queryString is **fileType=FACE**.
+
+The queryString below **`extension=png`** indicates that  you want to upload **png** image. You can replace it with **jpg**、**gif**、**mp4** according to your file extension type.
+
+Take **AWS S3** for example:
+
+````javascript
+const axios = require('axios');
+
+const url = 'http://sandbox.swaptech.net/v1/files/-/signatures/amazons3';
+const extension = 'jpg';
+const fileType = 'FACE';
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+axios.get(`${url}?extension=${extension}&fileType=${fileType}`, {
+  headers: {
+    'X_API_KEY': apiKey,
+    'X_API_SIGN': apiSign,
+    'X_API_TS': apiTs
+  }
+})
+  .then(response => {
+    console.log('Response data:', response.data);
+  })
+  .catch(error => {
+    console.error('There has been a problem with the request:', error);
+  });
+
+// success response
+//    {
+//        success: true,
+//            errorCode: 0,
+//        data: {
+//        		fileId: '3640590357140404621',
+//            url: 'https://s3.ap-east-1.amazonaws.com/api-sandbox-temporary',
+//            key: 'US/20230921/XDloslFiMM/6c5ef2c0-b4b6-4b87-8af4-2f21e7b5ac9d.jpg',
+//            policy: 'eyJleHBpcmF0aW9uIjoiMjAyMy0wOS0yMVQxNTo0OTo1MloiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJhcGktc2FuZGJveC10ZW1wb3JhcnkifSx7ImtleSI6IlVTLzIwMjMwOTIxL1hEbG9zbEZpTU0vNmM1ZWYyYzAtYjRiNi00Yjg3LThhZjQtMmYyMWU3YjVhYzlkLmpwZyJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotY3JlZGVudGlhbCI6IkFLSUFWQVBPUkdER0tIM0VIWFZULzIwMjMwOTIxL2FwLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSx7IngtYW16LWRhdGUiOiIyMDIzMDkyMVQxNTM5NTJaIn0sWyJlcSIsIiR4LWFtei1tZXRhLXVzZXJJZCIsIjEiXSxbImVxIiwiJHgtYW16LW1ldGEtcGFyYW1ldGVycyIsImV5SmpiR2xsYm5SZmNtVnhkV1Z6ZEY5cFpDSTZJak0yTkRBMU9UQXpOVGN4TkRBME1EUTJNakFpZlE9PSJdLFsiZXEiLCIkeC1hbXotbWV0YS1maWxlVHlwZSIsIkZBQ0UiXSxbImVxIiwiJHgtYW16LW1ldGEtYnVja2V0IiwiYXBpLXNhbmRib3gtdGVtcG9yYXJ5Il0sWyJzdGFydHMtd2l0aCIsIiRDb250ZW50LVR5cGUiLCJpbWFnZS9qcGVnIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XV19',
+//            expire: '1695282592776',
+//            xamzAlgorithm: 'AWS4-HMAC-SHA256',
+//            xamzCredential: 'AKIAVAPORGDGKH3EHXVT/20230921/ap-east-1/s3/aws4_request',
+//            xamzDate: '20230921T153952Z',
+//            xamzSignature: '67e82113bec6a780c8809a843b114e28f9ac1145249f28a910755dd7dd0714e7',
+//            xamzMetaUserid: '1',
+//            xamzMetaBucket: 'api-sandbox-temporary',
+//            xamzMetaFiletype: 'FACE',
+//            xamzMetaParameters: 'eyJjbGllbnRfcmVxdWVzdF9pZCI6IjM2NDA1OTAzNTcxNDA0MDQ2MjAifQ=='
+//    },
+//        errorMsg: 'OK'
+//    }
+````
+
+
+
+**Step2:** Upload user face image
+
+This step is the same as uploading a material image. The only difference is **`X-Amz-Meta-Filetype=FACE`**.
+Take **AWS S3** for example:
+
+```javascript
+const axios = require('axios');
+const FormData = require('form-data');
+const fs = require('fs');
+
+const url = 'https://s3.ap-east-1.amazonaws.com/api-sandbox-temporary';
+const filePath = 'path/to/your/file.jpg'; // Replace with the actual file path
+
+const form = new FormData();
+form.append('key', 'US/20230921/XDloslFiMM/6c5ef2c0-b4b6-4b87-8af4-2f21e7b5ac9d.jpg');
+form.append('Content-Type', 'image/jpeg');
+form.append('X-Amz-Credential', 'AKIAVAPORGDGKH3EHXVT/20230921/ap-east-1/s3/aws4_request');
+form.append('X-Amz-Algorithm', 'AWS4-HMAC-SHA256');
+form.append('X-Amz-Date', '20230921T153952Z');
+form.append('X-Amz-Meta-Userid', '1');
+form.append('X-Amz-Meta-Bucket', 'api-sandbox-temporary');
+form.append('X-Amz-Meta-Filetype', 'FACE');
+form.append('X-Amz-Meta-Parameters', 'eyJjbGllbnRfcmVxdWVzdF9pZCI6IjM2NDA1OTAzNTcxNDA0MDQ2MjAifQ==');
+form.append('Policy', 'eyJleHBpcmF0aW9uIjoiMjAyMy0wOS0yMVQxNTo0OTo1MloiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJhcGktc2FuZGJveC10ZW1wb3JhcnkifSx7ImtleSI6IlVTLzIwMjMwOTIxL1hEbG9zbEZpTU0vNmM1ZWYyYzAtYjRiNi00Yjg3LThhZjQtMmYyMWU3YjVhYzlkLmpwZyJ9LHsieC1hbXotYWxnb3JpdGhtIjoiQVdTNC1ITUFDLVNIQTI1NiJ9LHsieC1hbXotY3JlZGVudGlhbCI6IkFLSUFWQVBPUkdER0tIM0VIWFZULzIwMjMwOTIxL2FwLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QifSx7IngtYW16LWRhdGUiOiIyMDIzMDkyMVQxNTM5NTJaIn0sWyJlcSIsIiR4LWFtei1tZXRhLXVzZXJJZCIsIjEiXSxbImVxIiwiJHgtYW16LW1ldGEtcGFyYW1ldGVycyIsImV5SmpiR2xsYm5SZmNtVnhkV1Z6ZEY5cFpDSTZJak0yTkRBMU9UQXpOVGN4TkRBME1EUTJNakFpZlE9PSJdLFsiZXEiLCIkeC1hbXotbWV0YS1maWxlVHlwZSIsIkZBQ0UiXSxbImVxIiwiJHgtYW16LW1ldGEtYnVja2V0IiwiYXBpLXNhbmRib3gtdGVtcG9yYXJ5Il0sWyJzdGFydHMtd2l0aCIsIiRDb250ZW50LVR5cGUiLCJpbWFnZS9qcGVnIl0sWyJjb250ZW50LWxlbmd0aC1yYW5nZSIsMCw0MTk0MzA0XV19');
+form.append('X-Amz-Signature', '67e82113bec6a780c8809a843b114e28f9ac1145249f28a910755dd7dd0714e7');
+form.append('file', fs.createReadStream(filePath));
+
+axios.post(url, form, {
+  headers: {
+    ...form.getHeaders(), // Add appropriate Content-Type header based on form data
+  },
+})
+  .then(response => {
+    console.log('Response data:', response.data);
+  })
+  .catch(error => {
+    console.error('There has been a problem with the request:', error);
+  });
+```
+
+
+
+**Step3:** Add face image using the **fileId**
+
+After successfully uploading the user face image to **AWS S3** or **Aliyun OSS**, we can use the **user face fileId** (contains in signature) to add user face, and the **faceId** will be returned in the success response.
+
+```javascript
+const axios = require('axios');
+
+const url = 'http://sandbox.swaptech.net/v1/faces/';
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+const payload = {
+  fileId: '3640546580686240071',
+  fileUrl: null,
+  ttl: 3600000,
+  clientRequestId: '8656519754205426425'
+};
+
+const data = {
+  payload: JSON.stringify(payload)
+};
+
+axios.post(url, data, {
+  headers: {
+    'X_API_KEY': apiKey,
+    'X_API_SIGN': apiSign,
+    'X_API_TS': apiTs,
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => {
+    console.log('Response data:', JSON.stringify(response.data));
+  })
+  .catch(error => {
+    console.error('There has been a problem with the request:', error);
+  });
+
+// success response
+//    {
+//        "code": 0,
+//        "data": {
+//        "clientRequestId": "6232788007327727191",
+//            "expiredAt": "1695269156150",
+//            "faces": [{
+//            "faceId": "3640594780956719535",
+//                "url": "https://api-sandbox-temporary-hk.oss-cn-hongkong.aliyuncs.com/ae2625c9-e2ee-4e84-8222-5162f000cc9e.jpg?Expires=1695269156&OSSAccessKeyId=LTAI4G3p41pfESSvEH554mov&Signature=tfJa95ckDxfVWoC7ziLiVgbSOTM%3D"
+//        }]
+//    },
+//        "msg": "OK"
+//    }
+```
+
+
+
+#### Create Task and query
+
+After you finish the above step, the **materialId** and the **faceId** can be used to create a task.
+
+```javascript
+const axios = require('axios');
+
+const url = 'http://sandbox.swaptech.net/v1/tasks/';
+const apiKey = '<ACCESS_KEY>';
+const apiSign = '<SIGNATURE>';
+const apiTs = '<TIMESTAMP>';
+
+const payload = {
+  materialId: '3640594705794791847',
+  facePairs: [
+    {
+      index: 0,
+      faceId: '3640594780956719535',
+      faceUrl: null
+    }
+  ],
+  ttl: 3600000,
+  priority: 'HIGH',
+  clientRequestId: '8005869950778481107',
+  callbackUrl: 'https://webhook.site/d2e0ed34-49f1-4baf-b175-4b28a904a4d5'
+};
+
+const data = {
+  payload: JSON.stringify(payload)
+};
+
+axios.post(url, data, {
+  headers: {
+    'X_API_KEY': apiKey,
+    'X_API_SIGN': apiSign,
+    'X_API_TS': apiTs,
+    'Content-Type': 'application/json'
+  }
+})
+  .then(response => {
+    console.log('Response data:', response.data);
+  })
+  .catch(error => {
+    console.error('There has been a problem with the request:', error);
+  });
+
+// success response
+// {"code":0,"data":{"taskId":"3640595075161979324","clientRequestId":"8005869950778481107"},"msg":"OK"}
+```
+
+The task query `javascript` is the same as described before.
+
+## Contributing
+
+Contributions are welcome.
+If you've found a bug within this project, please open an issue to discuss what you would like to change.
+
+## Disclaimer
+
+SwapTech is a technology provider and is committed to keeping customer information confidential. However, it is the responsibility of the user to use the technology in a lawful manner. SwapTech does not take responsibility for the actions of the user. It is advisable for users to customize a disclaimer based on local laws and seek legal advice if necessary.

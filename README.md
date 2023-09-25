@@ -1,7 +1,7 @@
 # SwapTech Public API Java
 
-This is a lightweight example that works to
-the [SwapTech public API doc](https://doc.swaptech.net/swaptech-api/swagger-ui/index.html#)
+This is a lightweight example that works to the [SwapTech public API doc](https://doc.swaptech.net/swaptech-api/swagger-ui/index.html#).
+You can click on [**Javascript**](api_demo_javascript.md) or [**Curl**](api_demo_curl.md) to access the corresponding demo and view the respective example descriptions.
 
 - Supported APIs:
     - Account
